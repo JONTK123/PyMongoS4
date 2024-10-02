@@ -8,7 +8,6 @@ class Users:
 
     def to_dict(self):
         return{
-            'type': self.type,
             'nickname': self.nickname,
             'nome': self.nome,
             'password': self.password
@@ -21,3 +20,10 @@ class Messages:
         self.nickname = nickname
         self.content = content
         self.datetime = datetime
+
+    def to_dict(self):
+        return {
+            'nickname': self.nickname,
+            'content': self.content,
+            'datetime': self.datetime
+        }

@@ -5,6 +5,8 @@ from pymongo import MongoClient
 from models import Users
 from dotenv import load_dotenv
 
+from src.models import Messages
+
 load_dotenv()
 
 def connection():
@@ -26,7 +28,8 @@ def main():
 
     post = Users('Filipe', 'filipe.dmtm@puccampinas.edu', '123456qwerty')
     dict_post = post.__dict__
-
+    #dict_post = post.to_dict()  #Usando metodo da classe de transoformar em dict
+    
     post_id = users_collection.insert_one(dict_post).inserted_id
     print(f'Documento inserido com o ID: {post_id}')
 
