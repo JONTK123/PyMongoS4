@@ -1,9 +1,14 @@
 import datetime
+import os
+
 from pymongo import MongoClient
 from models import Users
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def connection():
-    connection_string = "mongodb+srv://filipedaniel2004:123456qwerty@aula.c5xsrx6.mongodb.net/"
+    connection_string = os.getenv("MONGODB_URI")
     connection = MongoClient(connection_string)
 
     try: #teste da conexão
@@ -19,7 +24,7 @@ def main():
     database = db_conect['pymongo']
     users_collection = database['users']
 
-    post = {Users('Filipe', 'filipe.dmtm@puccampinas.edu', '123456qwerty')}
+    post = Users('Filipe', 'filipe.dmtm@puccampinas.edu', '123456qwerty')
     dict_post = post.__dict__
 
     post_id = users_collection.insert_one(dict_post).inserted_id
