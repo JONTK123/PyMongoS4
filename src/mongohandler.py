@@ -1,4 +1,6 @@
+from datetime import datetime
 from pymongo import MongoClient
+from models import Users
 
 class MongoHandler:
 
@@ -29,3 +31,19 @@ class MongoHandler:
         for user in users:
             nicknames.append(user['nickname'])
         return nicknames
+
+    def get_messages(self, nickname, chosen_nickname ):
+        db = self.connect()
+        messages = db.messages.find({'$or': [{'to': nickname, 'nickname': chosen_nickname}, {'to': chosen_nickname, 'nickname': nickname}]})
+        return messages
+
+    def send_messages(self, nickname, chosen_nickname, message):
+        db = self.connect()
+        db.messages.insert_one({'to': chosen_nickname, 'nickname': nickname, 'content': message, 'datetime': datetime.now()})
+        return True
+
+    def get_user(self):
+        db = self.connect()
+        users = db.users.find()
+        user_instances = [Users(user['nome'], user['nickname'], user['password']) for user in users]
+        return user_instances

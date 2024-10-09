@@ -1,113 +1,89 @@
 from pymongo import MongoClient
+import os
+from mongohandler import MongoHandler
 from models import Users
 
-import os
+class Main:
 
-class MongoHandler:
+    def main(self):
+        handler = MongoHandler(os.getenv("MONGODB_URI"), "pymongo")
+        authenticated = False
 
-    def __init__(self, connection_string=None, database_name="chat"):
-        if connection_string is None:
-            self.connection_string = ("mongodb+srv://filipedaniel2004:123456qwerty@aula.c5xsrx6.mongodb.net/") #trocar para a do negrinho
-        else:
-            self.connection_string = connection_string
+        # Obtenção de apelidos (nicknames) dos usuários
+        nicknames = handler.get_all_nicknames()
 
-        self.database_name = database_name
+        # Autenticação do usuário
+        while not authenticated:
+            nickname = input("Digite seu email: ")
+            password = input("Digite sua senha: ")
+            auth_user = None
 
-    def connect(self):
-        return MongoClient(self.connection_string).get_database(self.database_name)
+            user_instances = handler.get_user()
 
-    def authenticate(self, email, password) -> bool:
-        db = self.connect()
-        user = db.users.find_one({'email': email, 'password': password})
-        if user is not None:
-            return True
-        else:
-            return False
+            for user_instance in user_instances:
 
-    def get_all_nicknames(self):
-        db = self.connect()
-        users = db.users.find()
-        nicknames = []
-        for user in users:
-            nicknames.append(user['nickname'])
-        return nicknames
+                if user_instance.nickname == nickname and user_instance.password == password:
+                    auth_user = user_instance
+                    authenticated = True
+                    print("Autenticação bem-sucedida!")
+                    break
 
-def main():
-    # Create a User instance
-    user_instance = Users('Filipe', 'filipe.dmtm@puccampinas.edu', '123456qwerty')
+            if not authenticated:
+                print("Usuário incorreto. Tente novamente.")
 
-    handler = MongoHandler(os.getenv("MONGO_CONNECTION_STRING"))  # Certifique-se de que a string de conexão está no .env
-    authenticated = False
+        while True:
+            print("MENU -> Digite uma opção:")
+            print("--------------------------")
+            print("1 -> Enviar mensagem")
+            print("2 -> Ler todas as mensagens")
+            print("3 -> Sair")
 
-    # Autenticação do usuário
-    while not authenticated:
-        res = handler.authenticate(user_instance.nickname, user_instance.password)
+            res = input()
 
-        if res:
-            authenticated = True
-        else:
-            print("Usuário incorreto. Tente novamente.")
-            user_instance.nickname = input("Digite seu email: ")
-            user_instance.password = input("Digite sua senha: ")
+            if res == "1":
+                # Enviar mensagem
+                print("Escolha o usuário desejado para enviar a mensagem: ")
+                i = 1
 
-    print("Autenticação bem-sucedida!")
+                for nickname in nicknames:
+                    print("{} - {}".format(i, nickname))
+                    i += 1
 
-    # Obtenção de apelidos (nicknames) dos usuários
-    nicknames = handler.get_all_nicknames()
+                user_choice = int(input("Digite o número correspondente ao usuário: "))
+                chosen_nickname = nicknames[user_choice - 1]
+                message = input(f"Digite a mensagem para {chosen_nickname}: ")
 
-    while True:
-        print("MENU -> Digite uma opção:")
-        print("--------------------------")
-        print("1 -> Enviar mensagem")
-        print("2 -> Ler todas as mensagens")
-        print("3 -> Sair")
+                # Inserir a lógica de envio de mensagem
+                handler.send_messages(auth_user, chosen_nickname, message)
+                print(f"Mensagem enviada para {chosen_nickname}!")
 
-        res = input()
+            elif res == "2":
+                # Ler todas as mensagens
+                print("Escolha o usuário que deseja ver as mensagens: ")
+                i = 1
+                for nickname in nicknames:
+                    print("{} - {}".format(i, nickname))
+                    i += 1
 
-        if res == "1":
-            # Enviar mensagem
-            print("Escolha o usuário desejado para enviar a mensagem: ")
-            i = 1
-            for nickname in nicknames:
-                print("{} - {}".format(i, nickname))
-                i += 1
+                user_choice = int(input("Digite o número correspondente ao usuário: "))
+                chosen_nickname = nicknames[user_choice - 1]
 
-            user_choice = int(input("Digite o número correspondente ao usuário: "))
-            chosen_nickname = nicknames[user_choice - 1]
-            message = input(f"Digite a mensagem para {chosen_nickname}: ")
+                # Lógica para ler mensagens
+                messages = handler.get_messages(nickname, chosen_nickname)
+                if not messages:
+                    print(f"Sem mensagens para {chosen_nickname}.")
+                else:
+                    print(f"Mensagens de {chosen_nickname}:")
+                    for msg in messages:
+                        print(msg)
 
-//criptografar
+            elif res == "3":
+                print("Saindo...")
+                break
 
-            # Inserir a lógica de envio de mensagem
-            handler.send_message(user_instance.nickname, chosen_nickname, message)
-            print(f"Mensagem enviada para {chosen_nickname}!")
-
-        elif res == "2":
-            # Ler todas as mensagens
-            print("Escolha o usuário que deseja ver as mensagens: ")
-            i = 1
-            for nickname in nicknames:
-                print("{} - {}".format(i, nickname))
-                i += 1
-
-            user_choice = int(input("Digite o número correspondente ao usuário: "))
-            chosen_nickname = nicknames[user_choice - 1]
-
-            # Lógica para ler mensagens
-            messages = handler.get_messages(user_instance.nickname, chosen_nickname)
-            if not messages:
-                print(f"Sem mensagens para {chosen_nickname}.")
             else:
-                print(f"Mensagens de {chosen_nickname}:")
-                for msg in messages:
-                    print(msg)
-
-        elif res == "3":
-            print("Saindo...")
-            break
-
-        else:
-            print("Opção inválida! Digite somente 1, 2 ou 3.")
+                print("Opção inválida! Digite somente 1, 2 ou 3.")
 
 if __name__ == "__main__":
-    main()
+    main_instance = Main()
+    main_instance.main()
