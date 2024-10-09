@@ -67,14 +67,23 @@ class Main:
                 user_choice = int(input("Digite o número correspondente ao usuário: "))
                 chosen_nickname = nicknames[user_choice - 1]
 
+                print(f"\n")
+
                 # Lógica para ler mensagens
-                messages = handler.get_messages(nickname, chosen_nickname)
-                if not messages:
-                    print(f"Sem mensagens para {chosen_nickname}.")
+                if chosen_nickname == auth_user:
+                    messages = handler.get_receiver_messages(auth_user)
+                    if messages is None:
+                        print(f"Sem mensagens para {auth_user}.")
+                    else:
+                        print(f"Mensagens recebidas por {auth_user}:")
+                        handler.view_messages(messages)
                 else:
-                    print(f"Mensagens de {chosen_nickname}:")
-                    for msg in messages:
-                        print(msg)
+                    messages = handler.get_send_messages(auth_user, chosen_nickname)
+                    if messages is None:
+                        print(f"Sem mensagens para {chosen_nickname}.")
+                    else:
+                        print(f"Mensagens enviadas para {chosen_nickname}:")
+                        handler.view_messages(messages)
 
             elif res == "3":
                 print("Saindo...")

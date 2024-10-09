@@ -32,10 +32,22 @@ class MongoHandler:
             nicknames.append(user['nickname'])
         return nicknames
 
-    def get_messages(self, nickname, chosen_nickname ):
+    def get_send_messages(self, nickname, chosen_nickname ):
         db = self.connect()
-        messages = db.messages.find({'$or': [{'to': nickname, 'nickname': chosen_nickname}, {'to': chosen_nickname, 'nickname': nickname}]})
+        messages = db.messages.find({'to': chosen_nickname, 'nickname': nickname})
         return messages
+
+    def get_receiver_messages(self,chosen_nickname):
+        db = self.connect()
+        messages = db.messages.find({'to': chosen_nickname})
+        return messages
+
+    def view_messages(self, messages):
+        for message in messages:
+            print(f"De: {message['nickname']}")
+            print(f"Em: {message['datetime']}")
+            print(f"Conteúdo: {message['content']}")
+            print("-----------------------------\n")
 
     def send_messages(self, nickname, chosen_nickname, message):
         db = self.connect()
