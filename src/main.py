@@ -8,6 +8,7 @@ class Main:
     def main(self):
         handler = MongoHandler(os.getenv("MONGODB_URI"), "pymongo")
         authenticated = False
+        auth_user = None
 
         # Obtenção de apelidos (nicknames) dos usuários
         nicknames = handler.get_all_nicknames()
@@ -16,14 +17,12 @@ class Main:
         while not authenticated:
             nickname = input("Digite seu email: ")
             password = input("Digite sua senha: ")
-            auth_user = None
 
             user_instances = handler.get_user()
 
             for user_instance in user_instances:
-
                 if user_instance.nickname == nickname and user_instance.password == password:
-                    auth_user = user_instance
+                    auth_user = user_instance.nickname
                     authenticated = True
                     print("Autenticação bem-sucedida!")
                     break
@@ -55,7 +54,7 @@ class Main:
 
                 # Inserir a lógica de envio de mensagem
                 handler.send_messages(auth_user, chosen_nickname, message)
-                print(f"Mensagem enviada para {chosen_nickname}!")
+                print(f"\nMensagem enviada para {chosen_nickname}!")
 
             elif res == "2":
                 # Ler todas as mensagens
