@@ -4,8 +4,7 @@ class MongoHandler:
 
     def __init__(self, connection_string=None, database_name="chat"):
         if connection_string is None:
-            self.connection_string = ("mongodb+srv://giaretta:76248504@aulas.l4l51te.mongodb.net/?retryWrites=true&w"
-                                      "=majority&appName=Aulas")
+            self.connection_string = ("mongodb+srv://filipedaniel2004:123456qwerty@aula.c5xsrx6.mongodb.net/")#trocar para a do negrinho
         else:
             self.connection_string = connection_string
 
