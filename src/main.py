@@ -51,9 +51,11 @@ class Main:
                 user_choice = int(input("Digite o número correspondente ao usuário: "))
                 chosen_nickname = nicknames[user_choice - 1]
                 message = input(f"Digite a mensagem para {chosen_nickname}: ")
+                password = input("Digite a senha para criptografar a mensagem: ")
 
                 # Inserir a lógica de envio de mensagem
-                handler.send_messages(auth_user, chosen_nickname, message)
+                handler.send_messages(auth_user, chosen_nickname, message)  # Envie a mensagem diretamente
+
                 print(f"\nMensagem enviada para {chosen_nickname}!")
 
             elif res == "2":
@@ -67,23 +69,36 @@ class Main:
                 user_choice = int(input("Digite o número correspondente ao usuário: "))
                 chosen_nickname = nicknames[user_choice - 1]
 
-                print(f"\n")
-
                 # Lógica para ler mensagens
                 if chosen_nickname == auth_user:
-                    messages = handler.get_receiver_messages(auth_user)
-                    if messages is None:
-                        print(f"Sem mensagens para {auth_user}.")
+                    messages = list(handler.get_receiver_messages(auth_user))
+                    if not messages:  # Verifica se a lista de mensagens está vazia
+                        print(f"\n\nSem mensagens para {auth_user}.")
                     else:
-                        print(f"Mensagens recebidas por {auth_user}:")
-                        handler.view_messages(messages)
+                        print(f"\n\nMensagens recebidas por {auth_user}:")
+                        for message in messages:
+                            # Descriptografar a mensagem
+                            password = input("Digite a senha para descriptografar a mensagem: ")
+                            decrypted_message = handler.decrypt_message(password, message['content'])
+                            if decrypted_message:
+                                print(f"De: {message['nickname']} | Mensagem: {decrypted_message} | Em: {message['datetime']}")
+                            else:
+                                print("Falha ao descriptografar a mensagem.")
+
                 else:
-                    messages = handler.get_send_messages(auth_user, chosen_nickname)
-                    if messages is None:
-                        print(f"Sem mensagens para {chosen_nickname}.")
+                    messages = list(handler.get_send_messages(auth_user, chosen_nickname))
+                    if not messages:  # Verifica se a lista de mensagens está vazia
+                        print(f"\n\nSem mensagens para {chosen_nickname}.")
                     else:
-                        print(f"Mensagens enviadas para {chosen_nickname}:")
-                        handler.view_messages(messages)
+                        print(f"\n\nMensagens enviadas para {chosen_nickname}:")
+                        for message in messages:
+                            # Descriptografar a mensagem
+                            password = input("Digite a senha para descriptografar a mensagem: ")
+                            decrypted_message = handler.decrypt_message(password, message['content'])
+                            if decrypted_message:
+                                print(f"Para: {chosen_nickname} | Mensagem: {decrypted_message} | Em: {message['datetime']}")
+                            else:
+                                print("Falha ao descriptografar a mensagem.")
 
             elif res == "3":
                 print("Saindo...")
