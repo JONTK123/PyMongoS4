@@ -13,6 +13,9 @@ class Users:
             'password': self.password
         }
 
+    def __str__(self):
+        return f"Nome: {self.nome}, Nickname: {self.nickname}, Password: {self.password}"
+
 #Modelo de classe Messages
 class Messages:
     def __init__(self, to, nickname, content, datetime):
