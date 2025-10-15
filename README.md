@@ -30,7 +30,7 @@ PyMongoS4 é uma aplicação de linha de comando que permite aos usuários envia
 - **Cryptography 43.0.1**: Biblioteca de primitivas criptográficas
 - **CFFI 1.17.1**: Interface de funções estrangeiras C para Python
 - **DNSPython 2.7.0**: Kit de ferramentas DNS
-- **PyCParser 2.22**: Parser C para Python
+- **pycparser 2.22**: Parser C para Python
 
 ## 📦 Pré-requisitos
 
@@ -82,6 +82,7 @@ pip install -r requirements.txt
    - Exemplo:
    ```
    MONGODB_URI=mongodb+srv://usuario:senha@cluster.mongodb.net/
+   # Substitua 'usuario' e 'senha' pelas suas credenciais reais do MongoDB
    ```
 
 2. **Estrutura do Banco de Dados**:
@@ -95,6 +96,7 @@ pip install -r requirements.txt
        "password": "senha123"
      }
      ```
+     **Nota**: As senhas são armazenadas em texto plano no banco de dados. Em um ambiente de produção, recomenda-se utilizar hash de senhas (bcrypt, argon2, etc.).
    
    - **messages**: Armazena as mensagens criptografadas
      ```json
